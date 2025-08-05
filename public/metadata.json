@@ -1,0 +1,6 @@
+{
+  "name": "MelodyCompare",
+  "description": "Analyzes AI-generated music against copyrighted tracks and provides an expert report with actionable advice for musicians.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
