@@ -1,8 +1,7 @@
 import type { AnalysisResultPayload, BrainstormMode, ChatMessage, AnalysisData, ChatContext, CatalogItem, SystemStatus } from '../types';
 
 // This line now intelligently switches between your local server and the live production server.
-const API_BASE_URL = 'https://melodycompare-backend-production-a73f.up.railway.app';
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 /**
  * A helper function to handle API responses and errors.
  * @param response The fetch Response object.
