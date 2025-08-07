@@ -1,14 +1,16 @@
 import type { AnalysisResultPayload, BrainstormMode, ChatMessage, AnalysisData, ChatContext, CatalogItem, SystemStatus } from '../types';
 
-// This line now intelligently switches between your local server and the live production server.
-const API_BASE_URL = '/api';
+// This line now correctly uses the environment variable set in Render.
+// It will be 'https://melodycompare-backend.onrender.com' in production.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 /**
  * A helper function to handle API responses and errors.
  * @param response The fetch Response object.
  * @returns The JSON response.
  * @throws An error if the response is not ok.
  */
-async function handleResponse(response: Response) {
+async function handleResponse(response: Response ) {
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'An unknown API error occurred.' }));
         throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
@@ -38,7 +40,7 @@ async function handleApiResponse(response: Response, functionName: string) {
 export async function analyzeFile(file: File): Promise<AnalysisResultPayload> {
     const formData = new FormData();
     formData.append('audioFile', file);
-    const response = await fetch(`${API_BASE_URL}/analyze`, { method: 'POST', body: formData });
+    const response = await fetch(`${API_BASE_URL}/api/analyze`, { method: 'POST', body: formData });
     return handleResponse(response);
 }
 
@@ -46,14 +48,14 @@ export async function compareFiles(aiSong: File, copyrightedSong: File): Promise
     const formData = new FormData();
     formData.append('aiSong', aiSong);
     formData.append('copyrightedSong', copyrightedSong);
-    const response = await fetch(`${API_BASE_URL}/compare`, { method: 'POST', body: formData });
+    const response = await fetch(`${API_BASE_URL}/api/compare`, { method: 'POST', body: formData });
     return handleResponse(response);
 }
 
 export async function uploadAnalysisAudio(file: File, analysisId: string): Promise<void> {
     const formData = new FormData();
     formData.append('audioFile', file);
-    const response = await fetch(`${API_BASE_URL}/analysis-audio/${analysisId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/analysis-audio/${analysisId}`, {
         method: 'POST',
         body: formData,
     });
@@ -61,7 +63,7 @@ export async function uploadAnalysisAudio(file: File, analysisId: string): Promi
 }
 
 export async function getChatAssistantStream(history: ChatMessage[], message: string, context: ChatContext): Promise<ReadableStream<Uint8Array>> {
-    const response = await fetch(`${API_BASE_URL}/assistant-chat`, {
+    const response = await fetch(`${API_BASE_URL}/api/assistant-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ history, message, context }),
@@ -74,7 +76,7 @@ export async function getChatAssistantStream(history: ChatMessage[], message: st
 }
 
 export async function generateBrainstormingIdeas(analysisData: AnalysisData, mode: BrainstormMode, theme?: string): Promise<string[]> {
-    const response = await fetch(`${API_BASE_URL}/brainstorm`, {
+    const response = await fetch(`${API_BASE_URL}/api/brainstorm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ analysisData, mode, theme }),
@@ -83,7 +85,7 @@ export async function generateBrainstormingIdeas(analysisData: AnalysisData, mod
 }
 
 export async function enhanceMusicPrompt(basePrompt: string): Promise<string> {
-    const response = await fetch(`${API_BASE_URL}/enhance-prompt`, {
+    const response = await fetch(`${API_BASE_URL}/api/enhance-prompt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ basePrompt }),
@@ -93,7 +95,7 @@ export async function enhanceMusicPrompt(basePrompt: string): Promise<string> {
 }
 
 export async function generateReport(analysisData: AnalysisData): Promise<string> {
-    const response = await fetch(`${API_BASE_URL}/generate-report`, {
+    const response = await fetch(`${API_BASE_URL}/api/generate-report`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ analysisData }),
@@ -103,7 +105,7 @@ export async function generateReport(analysisData: AnalysisData): Promise<string
 }
 
 export async function publishAnalysis(analysisData: AnalysisData, reportText: string): Promise<{ id: string }> {
-    const response = await fetch(`${API_BASE_URL}/share`, {
+    const response = await fetch(`${API_BASE_URL}/api/share`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ analysisData, reportText }),
@@ -112,12 +114,12 @@ export async function publishAnalysis(analysisData: AnalysisData, reportText: st
 }
 
 export async function getSharedAnalysis(id: string): Promise<AnalysisResultPayload> {
-    const response = await fetch(`${API_BASE_URL}/analysis/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/analysis/${id}`);
     return handleResponse(response);
 }
 
 export async function sendFeedback(type: string, message: string, email?: string): Promise<{ success: boolean }> {
-    const response = await fetch(`${API_BASE_URL}/feedback`, {
+    const response = await fetch(`${API_BASE_URL}/api/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, message, email }),
@@ -126,7 +128,7 @@ export async function sendFeedback(type: string, message: string, email?: string
 }
 
 export async function submitToCatalog(formData: FormData): Promise<CatalogItem> {
-    const response = await fetch(`${API_BASE_URL}/catalog/submit`, {
+    const response = await fetch(`${API_BASE_URL}/api/catalog/submit`, {
         method: 'POST',
         body: formData,
     });
@@ -134,7 +136,7 @@ export async function submitToCatalog(formData: FormData): Promise<CatalogItem> 
 }
 
 export async function getCatalogEntries(): Promise<CatalogItem[]> {
-    const response = await fetch(`${API_BASE_URL}/catalog/entries`);
+    const response = await fetch(`${API_BASE_URL}/api/catalog/entries`);
     return handleResponse(response);
 }
 
@@ -149,7 +151,7 @@ export async function getReportChatStream(
     message: string
 ): Promise<ReadableStream<Uint8Array>> {
      try {
-        const response = await fetch(`${API_BASE_URL}/chat`, {
+        const response = await fetch(`${API_BASE_URL}/api/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ history, message }),
@@ -171,7 +173,7 @@ export async function getReportChatStream(
 
 export async function getSystemStatus(): Promise<SystemStatus | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/status`);
+    const response = await fetch(`${API_BASE_URL}/api/status`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -181,6 +183,3 @@ export async function getSystemStatus(): Promise<SystemStatus | null> {
     return null;
   }
 }
-
-
-
