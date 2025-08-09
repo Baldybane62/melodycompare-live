@@ -183,3 +183,12 @@ export async function getSystemStatus(): Promise<SystemStatus | null> {
     return null;
   }
 }
+
+export async function generateStemAlternatives(stemName: string): Promise<Alternative[]> {
+    const response = await fetch(`${API_BASE_URL}/api/stem-alternatives`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stemName }),
+    });
+    return handleResponse(response);
+}
