@@ -70,6 +70,9 @@ export interface LibraryItem {
   artist: string;
   dateAnalyzed: string;
   riskLevel: string;
+  songTitle: string;
+  date: string;
+  data: AnalysisData;
 }
 
 export interface ChatMessage {
@@ -108,6 +111,11 @@ export interface SystemStatus {
     acrcloud: string;
     ai: string;
   };
+  geminiConfigured?: boolean;
+  acrCloudConfigured?: boolean;
+  acrHost?: string;
+  acrAccessKeySet?: boolean;
+  acrAccessSecretSet?: boolean;
 }
 
 export interface InfoSection {
