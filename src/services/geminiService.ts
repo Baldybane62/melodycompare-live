@@ -1,4 +1,4 @@
-import type { AnalysisResultPayload, BrainstormMode, ChatMessage, AnalysisData, ChatContext, CatalogItem, SystemStatus } from '../types';
+import type { AnalysisResultPayload, BrainstormMode, ChatMessage, AnalysisData, ChatContext, CatalogItem, SystemStatus, Alternative} from '../types';
 
 // This line now correctly uses the environment variable set in Render.
 // It will be 'https://melodycompare-backend.onrender.com' in production.
